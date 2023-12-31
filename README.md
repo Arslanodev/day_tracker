@@ -9,19 +9,19 @@ Users interact with service through API. List of endpoints:
 - `api/v1/tracker/stop`
 - `api/v1/tracker/day`, `week`, `month`
 
-1. User performs `GET` request to check if there running task. If `True` api returns: 
-    ```json
-    // GET : api/v1/tracker
+1. User performs `GET` request to check if there running task. If `True` api returns:  
+`GET` : api/v1/tracker
+    ```json  
     {
-        "id": 1231
+        "id": 1231,
         "task_name": "Playing_chess",
         "status": "Active",
         "spent_time": "1:23",
     }
     ```
-    else service returns list of tasks:
+    else service returns list of tasks:  
+    `GET` : api/v1/tracker
     ```json
-    // GET : api/v1/tracker
     {
         "tasks": [
             {"id": 1231, "task_name": "playing chess"},
@@ -30,29 +30,20 @@ Users interact with service through API. List of endpoints:
             ]
     }
     ```
-2. User can add or remove tasks with `POST` request: 
+2. User can add or remove tasks with `POST` request:  
+`POST`: api/v1/tracker/edit  
     ```json
-    // POST: api/v1/tracker/edit
     {
         "task_name": "New Task",
     }
-
-    // get request to remove
-
-    // GET: api/tracker/edit/{task_id}
     ```
-3. To start and stop tracking task:
-    ```json
-    // to start
-    GET: api/v1/tracker/start/{id}
-
-    // to stop
-    GET: api/v1/tracker/stop/{id}
-    ```
-To request reports user performs `GET` request with params of which report to request: `api/v1/tracker/report/{day, week, month}`
-
+3. To start and stop tracking task:  
+`GET`: api/v1/tracker/start/{id}  
+`GET`: api/v1/tracker/stop/{id}
+    
+To request reports user performs `GET` request with params of which report to request: `api/v1/tracker/report/{day, week, month}`  
+`GET`: api/v1/tracker/report/day
 ```json
-// GET: api/v1/tracker/report/day
 {
    "tasks": [
     {"tasks_name": "playing_chess", "spent_time": "2h"},
@@ -62,8 +53,8 @@ To request reports user performs `GET` request with params of which report to re
    "free_time": 12h
 }
 ```
+`GET`: api/v1/tracker/report/week
 ```json
-// GET: api/v1/tracker/report/week
 {
     "week_days": {
         "Mon": {
@@ -82,9 +73,8 @@ To request reports user performs `GET` request with params of which report to re
     }
 }
 ```
-
+`GET`: api/v1/tracker/report/month
 ```json
-// GET: api/v1/tracker/report/month
 {
     "weeks" : [
         {
