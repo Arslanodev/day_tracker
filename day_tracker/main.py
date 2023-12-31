@@ -1,80 +1,72 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
+
 from uuid import uuid4, UUID
+from day_tracker.models import Task
 from datetime import datetime
 
 
-class Task(BaseModel):
-    task_id: UUID
-    task_name: str
-    spent_time: int
-
-
-class User(BaseModel):
-    user_id: UUID
-    tasks: List[Task]
-
-
-class Active_task(BaseModel):
-    id: UUID
-    created_date: datetime
-
-
-class Active_tasks(BaseModel):
-    active_tasks: List[Active_task]
-
-
-database = {
-    "user_id": uuid4(),
-    "tasks": [
-        {
-            "task_id": uuid4(),
-            "task_name": "having a shower",
-            "spent_time": 0,
-        },
-        {
-            "task_id": uuid4(),
-            "task_name": "having a meal",
-            "spent_time": 0,
-        },
-    ],
-}
-
-running_task_database = {
-    "fkey": database["tasks"][0]["task_id"],
-    "created_date": datetime(2023, 12, 14, 17, 52, 10),
-}
-
-
 app = FastAPI()
+running_task_database = {}
+database = {
+    "84fdad0b-2468-472b-be92-4f66bfb0239f": {
+        "task_id": "84fdad0b-2468-472b-be92-4f66bfb0239f",
+        "task_name": "Learning",
+        "spent_time": 0,
+    },
+    "d0b-2468-472b-be92-4f66bfb0239f": {
+        "task_id": "d0b-2468-472b-be92-4f66bfb0239f",
+        "task_name": "Reading",
+        "spent_time": 0,
+    },
+}
 
 
-@app.get("api/v1/tracker")
+@app.get("/api/v1/tracker")
 def get_task_names():
-    pass
+    global database
+    if running_task_database:
+        return running_task_database
+    else:
+        return [value for key, value in database.items()]
 
 
-@app.post("api/v1/tracker/edit")
-def add_new_task():
-    pass
+@app.get("/api/v1/tracker/{task_id}")
+def get_details(task_id):
+    return database[task_id]
 
 
-@app.get("api/v1/tracker/edit/{task_id}")
+@app.post("/api/v1/tracker")
+def add_new_task(task_data: Task):
+    id = uuid4()
+    task_data.task_id = id
+    database[id] = task_data
+
+    return task_data
+
+
+@app.delete("/api/v1/tracker/{task_id}")
 def delete_task(task_id):
     pass
 
 
-@app.get("api/v1/tracker/start/{task_id}")
+@app.get("/api/v1/tracker/start/{task_id}")
 def start_tracker(task_id):
-    pass
+    global running_task_database
+    running_task_database = {"fkey": task_id, "created_date": datetime.now()}
+
+    return running_task_database
 
 
-@app.get("api/v1/tracker/stop/{task_id}")
-def stop_tracker(track_id):
-    pass
+@app.get("/api/v1/tracker/stop/")
+def stop_tracker():
+    global running_task_database
+    date = running_task_database["created_date"]
+    current = datetime.now()
+    running_task_database = {}
+
+    return date - current
 
 
-@app.get("api/v1/tracker/{kind}")
+@app.get("/api/v1/tracker/{kind}")
 def generate_reports(kind):
     pass
