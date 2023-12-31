@@ -4,14 +4,13 @@ Web app for tracking time
 ## Lifecycle
 Users interact with service through API. List of endpoints:
 - `api/v1/tracker`
-- `api/v1/tracker/edit`
 - `api/v1/tracker/start`
 - `api/v1/tracker/stop`
 - `api/v1/tracker/day`, `week`, `month`
 
 1. User performs `GET` request to check if there running task. If `True` api returns:  
 `GET` : api/v1/tracker
-    ```json  
+    ```json
     {
         "id": 1231,
         "task_name": "Playing_chess",
