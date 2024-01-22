@@ -1,24 +1,25 @@
-from typing import List
-from datetime import datetime
-from pydantic import BaseModel
-from uuid import uuid4, UUID
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+from database import Base
 
 
-class Task(BaseModel):
-    task_id: UUID = uuid4()
-    task_name: str
-    spent_time: int = 0
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)
+
+    tasks = relationship("Task", back_populates="owner")
 
 
-class User(BaseModel):
-    user_id: UUID
-    tasks: List[Task]
+class Task(Base):
+    __tablename__ = "tasks"
 
+    id = Column(Integer, primary_key=True, index=True)
+    task_name = Column(String, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"))
 
-class Active_task(BaseModel):
-    id: UUID
-    created_date: datetime
-
-
-class Active_tasks(BaseModel):
-    active_tasks: List[Active_task]
+    owner = relationship("User", back_populates="tasks")
