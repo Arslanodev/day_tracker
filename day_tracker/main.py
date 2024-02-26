@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 import models
 import schemas
@@ -12,7 +13,10 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-# Dependency
+running_tasks = {}
+
+
+# Dependency2
 def get_db():
     db = SessionLocal()
     try:
@@ -21,6 +25,7 @@ def get_db():
         db.close()
 
 
+# User
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -43,6 +48,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
+# Task
 @app.post("/users/{user_id}/task/")
 def create_task_for_user(
     user_id: int, task: schemas.TaskCreate, db: Session = Depends(get_db)
@@ -55,22 +61,14 @@ def get_tasks(user_id: int, db: Session = Depends(get_db)):
     return crud.get_tasks(db, user_id)
 
 
-@app.get("users/{user_id}/task/{task_id}/start/")
-def start_tracker(task_id):
-    global running_task_database
-    running_task_database = {"fkey": task_id, "created_date": ""}
-
-    return running_task_database
+@app.get("/users/{user_id}/task/{task_id}/start/")
+def start_tracker(user_id: int, task_id: int):
+    pass
 
 
-@app.get("users/{user_id}/task/{task_id}/stop/")
-def stop_tracker():
-    global running_task_database
-    date = running_task_database["created_date"]
-    current = ""
-    running_task_database = {}
-
-    return date - current
+@app.get("users/{user_id}/task/stop/")
+def stop_tracker(user_id: int):
+    pass
 
 
 @app.get("/api/v1/task/{kind}")
